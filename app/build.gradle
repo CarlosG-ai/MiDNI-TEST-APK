@@ -1,0 +1,124 @@
+plugins {
+    id 'com.android.application'
+}
+
+// ── Versión auto-incremental ──────────────────────────────────────────────────
+def versionProps = new Properties()
+def versionFile = rootProject.file('version.properties')
+if (versionFile.exists()) {
+    versionFile.withInputStream { versionProps.load(it) }
+}
+def buildNum = versionProps.getProperty('buildNumber', '1').toInteger()
+
+android {
+    namespace 'es.gob.midni.qrdemo'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "es.gob.midni.qrdemo"
+        minSdk 24
+        targetSdk 35
+        versionCode buildNum
+        versionName "1.0.${buildNum}"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../midni-release.jks")
+            storePassword "midni1234"
+            keyAlias "midni"
+            keyPassword "midni1234"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+
+    sourceSets {
+        test {
+            resources.srcDirs += [
+                "${rootDir}/midni-qr-spec/assets/qr-ejemplos",
+                "${rootDir}/app/src/main/assets"
+            ]
+        }
+    }
+
+    testOptions {
+        unitTests.all { Test t ->
+            // AGP 9.2.0 "built-in Kotlin" compila a built_in_kotlinc/ pero esa ruta
+            // contiene el carácter 'ó' (Formación) que corrompe la URL del URLClassLoader
+            // del worker Gradle. Copiamos clases Y recursos a java.io.tmpdir (ruta ASCII pura).
+            def tmpDir = new File(System.getProperty("java.io.tmpdir"), "midni-kotlin-test-classes")
+            t.doFirst {
+                tmpDir.mkdirs()
+                def paths = [
+                    new File(buildDir, "intermediates/built_in_kotlinc/debugUnitTest/compileDebugUnitTestKotlin/classes"),
+                    new File(buildDir, "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"),
+                    new File(buildDir, "intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out"),
+                    new File(buildDir, "intermediates/java_res/debug/processDebugJavaRes/out")
+                ]
+                paths.each { src ->
+                    if (src.exists()) {
+                        ant.copy(todir: tmpDir.absolutePath, overwrite: true, quiet: true) {
+                            fileset(dir: src.absolutePath)
+                        }
+                    }
+                }
+            }
+            classpath.from(tmpDir)
+            // Mockito 5.x / ByteBuddy no soporta Java 26 sin este flag
+            jvmArgs "-Dnet.bytebuddy.experimental=true"
+        }
+    }
+}
+
+// Incrementa buildNumber en version.properties al finalizar el empaquetado release
+tasks.configureEach { task ->
+    if (task.name == 'packageRelease') {
+        task.doLast {
+            versionProps['buildNumber'] = (buildNum + 1).toString()
+            versionFile.withOutputStream { versionProps.store(it, null) }
+            println "\u2713 Release build #${buildNum} empaquetado. Siguiente build será #${buildNum + 1}"
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.github.mik3y:usb-serial-for-android:3.7.3'
+
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.3.1'
+    testImplementation 'com.google.zxing:javase:3.5.3'
+    // Implementación real de org.json para tests JVM (VerificationCertStore usa JSONObject)
+    testImplementation 'org.json:json:20231013'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+}
