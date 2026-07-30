@@ -9,6 +9,7 @@ if (versionFile.exists()) {
     versionFile.withInputStream { versionProps.load(it) }
 }
 def buildNum = versionProps.getProperty('buildNumber', '1').toInteger()
+def apkBaseName = 'MiDNI TEST APK'
 
 def localSigningProps = new Properties()
 def localSigningFile = rootProject.file('gradle.properties.local')
@@ -105,6 +106,14 @@ android {
             classpath.from(tmpDir)
             // Mockito 5.x / ByteBuddy no soporta Java 26 sin este flag
             jvmArgs "-Dnet.bytebuddy.experimental=true"
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName.set("${apkBaseName}-${variant.buildType}.apk")
         }
     }
 }
