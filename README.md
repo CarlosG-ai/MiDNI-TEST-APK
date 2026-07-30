@@ -2,28 +2,30 @@
 
 Aplicacion Android para lectura y validacion de codigos QR de MiDNI.
 
-Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7.
+Esta aplicación busca resolver el problema técnico al que se enfrentan los desarrolladores de productos electrónicos, cuando requieren probar diferentes módulos de hardware.
+En este caso se requiere poder leer el contenido de un código QR desde:
+- La cámara del propio dipositivo.
+- Una cámara conectada al puerto USB del dispositivo, emulando teclado HID.
+- Una cámara conectada al puerto USB del dispositivo, virtualizando un puerto serie.
+- Una cámara conectada por TCP (para usarlo en el emulador)
 
-El proyecto implementa validacion estructural y criptografica del contenido QR,
-siguiendo la especificacion incluida en el repositorio:
+Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7, porque los dipositivos físicos trabajan con esta versión de Android. Se requiere la mayor compatibilidad entre versiones de Android.
 
+El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio:
 - `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
 
 ---
 
 ## 1) Descripcion general del proyecto
 
-MiDNI QR Verifier es una app Android orientada a pruebas funcionales de lectura
-y verificacion de QR MiDNI en distintos escenarios:
+MiDNI QR Verifier es una app Android orientada a pruebas funcionales de lectura y verificacion de QR MiDNI en distintos escenarios:
 
 - Escaneo por camara (ZXing Embedded).
 - Lectura por dispositivo HID USB (lector que emula teclado).
 - Lectura por puerto serie USB (USB Host con `usb-serial-for-android`).
 - Simulacion por TCP en emulador Android para pruebas sin hardware fisico.
 
-La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el
-certificado de verificacion desde un almacén local, valida firma ECDSA y muestra
-un resumen para usuario junto con datos personales cuando la validacion es correcta.
+La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el certificado de verificacion desde un almacén local, valida firma ECDSA y muestra un resumen para usuario junto con datos personales cuando la validacion es correcta.
 
 ---
 
