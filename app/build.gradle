@@ -27,7 +27,7 @@ def hasReleaseSigning = !releaseStoreFilePath.isEmpty() &&
     rootProject.file(releaseStoreFilePath).exists()
 
 android {
-    namespace 'es.gob.midni.qrdemo'
+    namespace = 'es.gob.midni.qrdemo'
     compileSdk 35
 
     defaultConfig {
@@ -67,8 +67,8 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
-        buildConfig true
+        viewBinding = true
+        buildConfig = true
     }
 
     sourceSets {
