@@ -10,6 +10,17 @@ if (versionFile.exists()) {
 }
 def buildNum = versionProps.getProperty('buildNumber', '1').toInteger()
 
+def localSigningProps = new Properties()
+def localSigningFile = rootProject.file('gradle.properties.local')
+if (localSigningFile.exists()) {
+    localSigningFile.withInputStream { localSigningProps.load(it) }
+}
+
+def releaseStoreFilePath = localSigningProps.getProperty('MIDNI_RELEASE_STORE_FILE', '../midni-release.jks')
+def releaseStorePassword = localSigningProps.getProperty('MIDNI_RELEASE_STORE_PASSWORD', '')
+def releaseKeyAlias = localSigningProps.getProperty('MIDNI_RELEASE_KEY_ALIAS', 'midni')
+def releaseKeyPassword = localSigningProps.getProperty('MIDNI_RELEASE_KEY_PASSWORD', '')
+
 android {
     namespace 'es.gob.midni.qrdemo'
     compileSdk 35
@@ -26,10 +37,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("../midni-release.jks")
-            storePassword "midni1234"
-            keyAlias "midni"
-            keyPassword "midni1234"
+            storeFile file(releaseStoreFilePath)
+            storePassword releaseStorePassword
+            keyAlias releaseKeyAlias
+            keyPassword releaseKeyPassword
         }
     }
 
