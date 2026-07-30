@@ -16,10 +16,15 @@ if (localSigningFile.exists()) {
     localSigningFile.withInputStream { localSigningProps.load(it) }
 }
 
-def releaseStoreFilePath = localSigningProps.getProperty('MIDNI_RELEASE_STORE_FILE', '../midni-release.jks')
+def releaseStoreFilePath = localSigningProps.getProperty('MIDNI_RELEASE_STORE_FILE', '')
 def releaseStorePassword = localSigningProps.getProperty('MIDNI_RELEASE_STORE_PASSWORD', '')
 def releaseKeyAlias = localSigningProps.getProperty('MIDNI_RELEASE_KEY_ALIAS', 'midni')
 def releaseKeyPassword = localSigningProps.getProperty('MIDNI_RELEASE_KEY_PASSWORD', '')
+def hasReleaseSigning = !releaseStoreFilePath.isEmpty() &&
+    !releaseStorePassword.isEmpty() &&
+    !releaseKeyAlias.isEmpty() &&
+    !releaseKeyPassword.isEmpty() &&
+    rootProject.file(releaseStoreFilePath).exists()
 
 android {
     namespace 'es.gob.midni.qrdemo'
@@ -37,16 +42,20 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(releaseStoreFilePath)
-            storePassword releaseStorePassword
-            keyAlias releaseKeyAlias
-            keyPassword releaseKeyPassword
+            if (hasReleaseSigning) {
+                storeFile rootProject.file(releaseStoreFilePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
