@@ -85,7 +85,7 @@ En la raiz del proyecto:
 
 APK debug generada en:
 
-- `app/build/outputs/apk/debug/app-debug.apk`
+- `app/build/outputs/apk/debug/MiDNI TEST APK-debug.apk`
 
 ### Ejecutar tests unitarios
 
@@ -103,6 +103,24 @@ APK debug generada en:
 
 Existe configuracion release en `app/build.gradle` con firma definida en
 `signingConfigs.release`.
+
+La salida de APK release se genera con nombre:
+
+- `app/build/outputs/apk/release/MiDNI TEST APK-release.apk`
+
+La firma release usa keystore en formato PKCS12 (`.p12`) configurado en
+`gradle.properties.local`.
+
+Ejemplo de configuracion local:
+
+```properties
+MIDNI_RELEASE_STORE_FILE=../midni-release.p12
+MIDNI_RELEASE_STORE_PASSWORD=<password>
+MIDNI_RELEASE_KEY_ALIAS=midni
+MIDNI_RELEASE_KEY_PASSWORD=<password>
+```
+
+> Importante: `gradle.properties.local` no debe subirse al repositorio.
 
 Para generar release:
 
