@@ -1,4 +1,4 @@
-package es.gob.midni.qrdemo
+﻿package midni.test
 
 object C40 {
 
@@ -59,3 +59,4 @@ object C40 {
         return out.toString().trimEnd()
     }
 }
+

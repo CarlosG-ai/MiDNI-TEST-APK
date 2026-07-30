@@ -1,4 +1,4 @@
-package es.gob.midni.qrdemo
+﻿package midni.test
 
 import android.content.res.AssetManager
 import org.json.JSONObject
@@ -26,3 +26,4 @@ class VerificationCertStore(assetManager: AssetManager) {
         return certMap[reference.uppercase(Locale.ROOT)]
     }
 }
+

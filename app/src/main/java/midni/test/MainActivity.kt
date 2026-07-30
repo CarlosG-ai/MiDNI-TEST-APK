@@ -1,4 +1,4 @@
-package es.gob.midni.qrdemo
+﻿package midni.test
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -24,7 +24,7 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
-import es.gob.midni.qrdemo.databinding.ActivityMainBinding
+import midni.test.databinding.ActivityMainBinding
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -33,15 +33,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var verifier: MidniQrVerifier
 
-    // ── Lectura HID (teclado USB) ─────────────────────────────────────────────
+    // â”€â”€ Lectura HID (teclado USB) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private val hidBuffer = StringBuilder()
     private var isListeningHid = false
     private val hidHandler = Handler(Looper.getMainLooper())
     private var hidPendingBytes: ByteArray? = null
-    /** Procesa el buffer si no llegan más caracteres en 300 ms (fin de trama). */
+    /** Procesa el buffer si no llegan mÃ¡s caracteres en 300 ms (fin de trama). */
     private val hidTimeoutRunnable = Runnable { processHidBuffer() }
 
-    // ── Lectura puerto serie virtual USB ───────────────────────────────────────────
+    // â”€â”€ Lectura puerto serie virtual USB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private var serialPort: UsbSerialPort? = null
     private var serialIoManager: SerialInputOutputManager? = null
     private val serialRecvBuffer = ByteArrayOutputStream()
@@ -89,10 +89,10 @@ class MainActivity : AppCompatActivity() {
         binding.tvRaw.text = verification.debugSummary
 
         if (verification.success) {
-            updateStatus("VÁLIDO", verification.userSummary)
+            updateStatus("VÃLIDO", verification.userSummary)
             showCredential(verification.personalData)
         } else {
-            updateStatus("INVÁLIDO", verification.userSummary)
+            updateStatus("INVÃLIDO", verification.userSummary)
             binding.cardCredential.visibility = View.GONE
         }
     }
@@ -161,14 +161,14 @@ class MainActivity : AppCompatActivity() {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
     }
 
-    // ── HID ──────────────────────────────────────────────────────────────────
+    // â”€â”€ HID â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private fun startHidListening() {
         hidBuffer.clear()
         isListeningHid = true
         binding.btnHid.setText(R.string.hid_button_listening)
         binding.btnHid.isEnabled = false
-        updateStatus("Esperando USB…", "Pase el QR por el lector USB.")
+        updateStatus("Esperando USBâ€¦", "Pase el QR por el lector USB.")
         // Timeout de seguridad: 10 segundos sin datos
         hidHandler.postDelayed({
             if (isListeningHid) {
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
         val rawBytes = rawText.toByteArray(Charsets.ISO_8859_1)
         stopHidListening()
         if (rawBytes.isEmpty()) {
-            updateStatus("Sin datos", "El lector USB no envió datos.")
+            updateStatus("Sin datos", "El lector USB no enviÃ³ datos.")
             return
         }
         hidPendingBytes = rawBytes
@@ -209,10 +209,10 @@ class MainActivity : AppCompatActivity() {
         binding.cardHidPreview.visibility = View.GONE
         hidPendingBytes = null
         if (verification.success) {
-            updateStatus("VÁLIDO", verification.userSummary)
+            updateStatus("VÃLIDO", verification.userSummary)
             showCredential(verification.personalData)
         } else {
-            updateStatus("INVÁLIDO", verification.userSummary)
+            updateStatus("INVÃLIDO", verification.userSummary)
             binding.cardCredential.visibility = View.GONE
         }
     }
@@ -305,10 +305,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 1001
-        private const val USB_PERMISSION_ACTION = "es.gob.midni.qrdemo.USB_PERMISSION"
+        private const val USB_PERMISSION_ACTION = "midni.test.USB_PERMISSION"
     }
 
-    // ── Puerto serie virtual USB ────────────────────────────────────────────────
+    // â”€â”€ Puerto serie virtual USB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     private fun startSerialSelection() {
         val usbManager = getSystemService(USB_SERVICE) as UsbManager
@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity() {
             val dev = d.device
             "${dev.deviceName}  [VID:${"%04X".format(dev.vendorId)} PID:${"%04X".format(dev.productId)}]  (${d.ports.size} puerto/s)"
         })
-        portItems.add("[Simulacion TCP puerto 9876 — emulador/debug]")
+        portItems.add("[Simulacion TCP puerto 9876 â€” emulador/debug]")
         AlertDialog.Builder(this)
             .setTitle("Seleccionar fuente de datos serie")
             .setItems(portItems.toTypedArray()) { _, idx ->
@@ -415,7 +415,7 @@ class MainActivity : AppCompatActivity() {
             serialRecvBuffer.reset()
             binding.btnSerial.setText(R.string.serial_button_listening)
             binding.btnSerial.isEnabled = false
-            updateStatus("Esperando datos serie…", "Puerto abierto a $baudRate bps. Pase el QR por el lector.")
+            updateStatus("Esperando datos serieâ€¦", "Puerto abierto a $baudRate bps. Pase el QR por el lector.")
             val listener = object : SerialInputOutputManager.Listener {
                 override fun onNewData(data: ByteArray) {
                     runOnUiThread {
@@ -456,7 +456,7 @@ class MainActivity : AppCompatActivity() {
         val bytes = serialRecvBuffer.toByteArray()
         stopSerialListening()
         if (bytes.isEmpty()) {
-            updateStatus("Sin datos", "El lector serie no envió datos.")
+            updateStatus("Sin datos", "El lector serie no enviÃ³ datos.")
             return
         }
         serialPendingBytes = bytes
@@ -471,3 +471,4 @@ class MainActivity : AppCompatActivity() {
         stopSerialListening()
     }
 }
+

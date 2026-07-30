@@ -1,4 +1,4 @@
-package es.gob.midni.qrdemo
+﻿package midni.test
 
 import android.content.res.AssetManager
 import java.util.Base64
@@ -208,3 +208,4 @@ data class PersonalData(
         return result
     }
 }
+

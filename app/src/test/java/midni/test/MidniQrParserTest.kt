@@ -1,4 +1,4 @@
-package es.gob.midni.qrdemo
+﻿package midni.test
 
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
@@ -19,9 +19,9 @@ import javax.imageio.ImageIO
 /**
  * Tests unitarios de [MidniQrParser].
  *
- * Usa las imágenes de ejemplo en midni-qr-spec/assets/qr-ejemplos/:
- *  - "Ejemplo 1.jpg" : QR MiDNI válido (expira 17-06-2030)
- *  - "Ejemplo 2.jpg" : QR numérico puro ("55449934144655"), NO es formato MiDNI
+ * Usa las imÃ¡genes de ejemplo en midni-qr-spec/assets/qr-ejemplos/:
+ *  - "Ejemplo 1.jpg" : QR MiDNI vÃ¡lido (expira 17-06-2030)
+ *  - "Ejemplo 2.jpg" : QR numÃ©rico puro ("55449934144655"), NO es formato MiDNI
  */
 class MidniQrParserTest {
 
@@ -75,14 +75,14 @@ class MidniQrParserTest {
     }
 
     // ---------------------------------------------------------------------------
-    // Ejemplo 1 – QR MiDNI válido (expira 17-06-2030)
+    // Ejemplo 1 â€“ QR MiDNI vÃ¡lido (expira 17-06-2030)
     // ---------------------------------------------------------------------------
 
     @Test
     fun `parse - Ejemplo1 se parsea sin excepcion`() {
         val parsed = MidniQrParser.parse(qrBytesOf("Ejemplo 1.jpg"))
         assertNotNull("Firma nula", parsed.signature)
-        assertTrue("signedContent vacío", parsed.signedContent.isNotEmpty())
+        assertTrue("signedContent vacÃ­o", parsed.signedContent.isNotEmpty())
     }
 
     @Test
@@ -100,7 +100,7 @@ class MidniQrParserTest {
     @Test
     fun `parse - Ejemplo1 certReference no esta vacio`() {
         val parsed = MidniQrParser.parse(qrBytesOf("Ejemplo 1.jpg"))
-        assertTrue("certReference vacío", parsed.header.certReference.isNotBlank())
+        assertTrue("certReference vacÃ­o", parsed.header.certReference.isNotBlank())
     }
 
     @Test
@@ -109,7 +109,7 @@ class MidniQrParserTest {
         val expiry = parsed.tlvs.firstOrNull { it.tag == 0x80 }
         assertNotNull("Falta tag 0x80 (caducidad)", expiry)
         assertTrue(
-            "Valor de caducidad vacío",
+            "Valor de caducidad vacÃ­o",
             String(expiry!!.value, Charsets.UTF_8).isNotBlank()
         )
     }
@@ -127,7 +127,7 @@ class MidniQrParserTest {
     fun `parse - Ejemplo1 firma tiene longitud par para ECDSA raw rs`() {
         val parsed = MidniQrParser.parse(qrBytesOf("Ejemplo 1.jpg"))
         assertEquals(
-            "Longitud de firma impar (inválida para ECDSA raw r||s)",
+            "Longitud de firma impar (invÃ¡lida para ECDSA raw r||s)",
             0, parsed.signature.size % 2
         )
     }
@@ -143,7 +143,7 @@ class MidniQrParserTest {
     }
 
     // ---------------------------------------------------------------------------
-    // Ejemplo 2 – QR numérico puro ("55449934144655"), NO es formato MiDNI
+    // Ejemplo 2 â€“ QR numÃ©rico puro ("55449934144655"), NO es formato MiDNI
     // ---------------------------------------------------------------------------
 
     @Test
@@ -151,10 +151,10 @@ class MidniQrParserTest {
         val bytes = qrBytesOf("Ejemplo 2.jpg")
         try {
             MidniQrParser.parse(bytes)
-            fail("Debería haber lanzado IllegalArgumentException para QR no-MiDNI")
+            fail("DeberÃ­a haber lanzado IllegalArgumentException para QR no-MiDNI")
         } catch (e: IllegalArgumentException) {
             assertTrue(
-                "Mensaje de excepción inesperado: ${e.message}",
+                "Mensaje de excepciÃ³n inesperado: ${e.message}",
                 e.message?.contains("Magic", ignoreCase = true) == true ||
                 e.message?.contains("magic", ignoreCase = true) == true
             )
@@ -166,13 +166,13 @@ class MidniQrParserTest {
         val bytes = qrBytesOf("Ejemplo 2.jpg")
         val text = String(bytes, Charsets.ISO_8859_1)
         assertTrue(
-            "Se esperaba QR con solo dígitos, pero contenido es: $text",
+            "Se esperaba QR con solo dÃ­gitos, pero contenido es: $text",
             text.all { it.isDigit() }
         )
     }
 
     // ---------------------------------------------------------------------------
-    // Ejemplo 3 – QR MiDNI binario (regresión: magic constant 0x40)
+    // Ejemplo 3 â€“ QR MiDNI binario (regresiÃ³n: magic constant 0x40)
     // ---------------------------------------------------------------------------
 
     @Test
@@ -180,7 +180,7 @@ class MidniQrParserTest {
         val bytes = qrBytesOf("ejemplo 3.png")
         assertEquals(
             "El primer byte debe ser el magic constant 0xDC, no 0x${bytes[0].toUByte().toString(16)}. " +
-            "Causa probable: se están usando los raw codewords del QR (RESULT_BYTES) en lugar del texto decodificado.",
+            "Causa probable: se estÃ¡n usando los raw codewords del QR (RESULT_BYTES) en lugar del texto decodificado.",
             0xDC, bytes[0].toUByte().toInt()
         )
     }
@@ -189,7 +189,7 @@ class MidniQrParserTest {
     fun `parse - Ejemplo3 se parsea sin excepcion`() {
         val parsed = MidniQrParser.parse(qrBytesOf("ejemplo 3.png"))
         assertNotNull("Firma nula", parsed.signature)
-        assertTrue("signedContent vacío", parsed.signedContent.isNotEmpty())
+        assertTrue("signedContent vacÃ­o", parsed.signedContent.isNotEmpty())
     }
 
     @Test
@@ -198,3 +198,4 @@ class MidniQrParserTest {
         assertEquals("ES", parsed.header.country)
     }
 }
+

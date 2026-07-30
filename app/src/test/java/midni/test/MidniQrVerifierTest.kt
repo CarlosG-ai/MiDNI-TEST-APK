@@ -1,4 +1,4 @@
-﻿package es.gob.midni.qrdemo
+﻿package midni.test
 
 import android.content.res.AssetManager
 import com.google.zxing.BinaryBitmap
@@ -182,4 +182,5 @@ class MidniQrVerifierTest {
         assertTrue("userSummary debe estar informado", result.userSummary.isNotBlank())
     }
 }
+
 

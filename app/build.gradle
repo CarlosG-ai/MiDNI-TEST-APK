@@ -28,11 +28,11 @@ def hasReleaseSigning = !releaseStoreFilePath.isEmpty() &&
     rootProject.file(releaseStoreFilePath).exists()
 
 android {
-    namespace = 'es.gob.midni.qrdemo'
+    namespace = 'midni.test'
     compileSdk 35
 
     defaultConfig {
-        applicationId "es.gob.midni.qrdemo"
+        applicationId "midni.test"
         minSdk 24
         targetSdk 35
         versionCode buildNum
