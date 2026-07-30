@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
 
         verifier = MidniQrVerifier(assets)
 
-        binding.tvTitle.text = "MVP MIDNI v${BuildConfig.VERSION_NAME}"
+        binding.tvTitle.text = "MiDNI TEST v${BuildConfig.VERSION_NAME}"
 
         if (!deviceHasCamera()) {
             binding.btnScan.isEnabled = false

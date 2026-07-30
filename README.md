@@ -4,10 +4,9 @@ Aplicacion Android para lectura y validacion de codigos QR de MiDNI.
 
 Esta aplicación busca resolver el problema técnico al que se enfrentan los desarrolladores de productos electrónicos, cuando requieren probar diferentes módulos de hardware.
 En este caso se requiere poder leer el contenido de un código QR desde:
-- La cámara del propio dipositivo.
-- Una cámara conectada al puerto USB del dispositivo, emulando teclado HID.
-- Una cámara conectada al puerto USB del dispositivo, virtualizando un puerto serie.
-- Una cámara conectada por TCP (para usarlo en el emulador)
+- La cámara del propio dipositivo físico.
+- Una cámara conectada al puerto USB del dispositivo físico, emulando teclado HID.
+- Una cámara conectada al puerto USB del PC donde se ejecuta el emulador android. Este puerto se comparte mediante una pasarela COM-->TCP
 
 Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7, porque los dipositivos físicos trabajan con esta versión de Android. Se requiere la mayor compatibilidad entre versiones de Android.
 

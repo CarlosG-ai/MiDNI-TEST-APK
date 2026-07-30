@@ -11,7 +11,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="MVP MIDNI"
+        android:text="MiDNI TEST"
         android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="#000000"
