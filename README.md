@@ -2,6 +2,8 @@
 
 Aplicacion Android para lectura y validacion de codigos QR de MiDNI.
 
+Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7.
+
 El proyecto implementa validacion estructural y criptografica del contenido QR,
 siguiendo la especificacion incluida en el repositorio:
 

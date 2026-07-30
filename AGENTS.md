@@ -6,8 +6,10 @@ Guía para agentes de IA que trabajen en este repositorio.
 
 ## Descripción del proyecto
 
-**MiDNI QR Verifier** es una aplicación Android (Kotlin) para leer y validar los
-códigos QR del DNI electrónico español (MiDNI). Soporta cuatro modos de entrada:
+**MiDNI QR Verifier** es una aplicación Android (Kotlin) para leer y validar los códigos QR del DNI electrónico español (MiDNI).
+Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7.
+
+Soporta cuatro modos de entrada:
 
 | Modo | Descripción |
 |------|-------------|
