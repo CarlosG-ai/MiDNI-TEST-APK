@@ -18,7 +18,7 @@
     #         y seleccionar "[Simulacion TCP puerto 9876 — emulador/debug]"
 
 .PARAMETER ComPort
-    Puerto serie del host (por defecto "COM7").
+    Puerto serie del host (por defecto "COM3").
 
 .PARAMETER BaudRate
     Velocidad del puerto serie (por defecto 9600).
@@ -27,7 +27,7 @@
     Puerto TCP local en el que escucha el puente (por defecto 9876).
 #>
 param(
-    [string]$ComPort  = "COM7",
+    [string]$ComPort  = "COM3",
     [int]   $BaudRate = 9600,
     [int]   $TcpPort  = 9876
 )
