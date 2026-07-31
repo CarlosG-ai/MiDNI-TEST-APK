@@ -70,16 +70,31 @@ La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el cer
 ### Requisitos previos
 
 - Windows con PowerShell (scripts `.ps1` incluidos)
-- Android Studio (version reciente compatible con AGP 9.2.0)
 - Android SDK con plataforma `API 35`
-- JDK 17 configurado en Android Studio/Gradle
+- JDK 17 configurado para Gradle
+- Visual Studio Code
+- (Opcional) Android Studio (version reciente compatible con AGP 9.2.0)
 - (Opcional) Emulador Android + `adb`
+
+### Desarrollo con Visual Studio Code
+
+Este repositorio esta orientado a trabajar desde Visual Studio Code.
+
+- Workspace recomendado: `MiDNI TEST APK.code-workspace`
+- Terminales y scripts PowerShell incluidos para emulador y pruebas (`launch-emulator.ps1`, `bridge-com-tcp.ps1`, `test-inject-payload.ps1`)
+- Flujo sugerido en VS Code: compilar con `gradlew.bat`, lanzar emulador con script y validar logs desde terminal integrada
+
+### Ejecutar desde Android Studio (opcional)
+
+1. Seleccionar dispositivo fisico o emulador.
+2. Ejecutar la configuracion `app` (Run).
+3. Probar alguno de los flujos de entrada: camara, HID o serie.
 
 ### Clonar y abrir el proyecto
 
 1. Clonar el repositorio.
-2. Abrir la carpeta raiz en Android Studio.
-3. Esperar sincronizacion de Gradle y descarga de dependencias.
+2. Abrir la carpeta raiz en Visual Studio Code o abrir `MiDNI TEST APK.code-workspace`.
+3. Esperar restauracion/sincronizacion de Gradle y descarga de dependencias.
 
 ### Compilar por linea de comandos
 
@@ -98,13 +113,6 @@ APK debug generada en:
 ```powershell
 .\gradlew.bat testDebugUnitTest
 ```
-
-### Ejecutar desde Android Studio
-
-1. Seleccionar dispositivo fisico o emulador.
-2. Ejecutar la configuracion `app` (Run).
-3. Probar alguno de los flujos de entrada: camara, HID o serie.
-
 ### Build release
 
 Existe configuracion release en `app/build.gradle` con firma definida en
@@ -234,6 +242,20 @@ Ejemplo de flujo de simulacion en emulador:
 - Camara (QR scanner)
 - Lector HID USB
 - Lector serie USB mediante puente TCP para emulador/debug
+
+---
+
+## 6) Automatizacion en GitHub Actions
+
+El proyecto incluye automatizacion en GitHub Actions para integracion continua y seguridad:
+
+- CI de compilacion debug: ejecuta build y tests unitarios en cada push/pull request sobre `master`.
+- Analisis de seguridad con CodeQL: analiza Kotlin/Java para detectar vulnerabilidades y patrones inseguros.
+
+Workflows incluidos en el repositorio:
+
+- `.github/workflows/android-debug-ci.yml`
+- `.github/workflows/codeql.yml`
 
 ---
 
