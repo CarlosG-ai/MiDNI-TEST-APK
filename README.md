@@ -5,6 +5,8 @@ MiDNI QR Verifier es el nombre de la aplicación publicada en UPTODOPWN: https:/
 
 La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Verifier-8ckayg78j3r6zdi
 
+En la carpeta del proyecto "Documentación" existen copias de la presentación, video y otras cosas interesantes.
+En la carpeta del proyecto "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
 
 Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
 

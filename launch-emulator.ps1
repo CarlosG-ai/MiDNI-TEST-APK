@@ -1,4 +1,5 @@
-# Lanza el emulador y lo centra en pantalla automáticamente
+# Lanza el emulador y lo centra en pantalla automáticamente.
+# Por defecto TAMBIEN lanza el bridge COM -> TCP (puerto 9876).
 # Uso: .\launch-emulator.ps1 [-ComPort COM3] [-BaudRate 115200] [-NoBridge]
 param(
     [string]$ComPort  = "COM3",
@@ -102,6 +103,8 @@ function Resolve-AdbPath {
 
 # ── Lanzar puente COM → TCP ───────────────────────────────────────────────────
 if (-not $NoBridge) {
+    Write-Host "Bridge TCP: ACTIVO (modo por defecto)." -ForegroundColor Green
+
     $adb = Resolve-AdbPath
     if (-not $adb) {
         Write-Host "No se pudo localizar adb.exe automaticamente." -ForegroundColor Red
@@ -134,5 +137,6 @@ if (-not $NoBridge) {
         Write-Host "No se encontro el script del puente: $bridgeScript" -ForegroundColor Red
     }
 } else {
+    Write-Host "Bridge TCP: DESACTIVADO por parametro -NoBridge." -ForegroundColor Yellow
     Write-Host "Modo -NoBridge activo: se inicia solo el emulador (sin puente TCP)." -ForegroundColor Yellow
 }

@@ -352,14 +352,9 @@ class MainActivity : AppCompatActivity() {
             optionDrivers.add(d)
         }
 
-        var selectedIndex = 0
         AlertDialog.Builder(this)
             .setTitle("Selecciona el origen de lectura")
-            .setMessage("Pulsa sobre una opci\u00F3n y despu\u00E9s en Continuar para iniciar la lectura.")
-            .setSingleChoiceItems(optionLabels.toTypedArray(), selectedIndex) { _, which ->
-                selectedIndex = which
-            }
-            .setPositiveButton("Continuar") { _, _ ->
+            .setItems(optionLabels.toTypedArray()) { _, selectedIndex ->
                 val selectedDriver = optionDrivers[selectedIndex]
                 if (selectedDriver == null) {
                     startTcpBridgeMode()
@@ -367,7 +362,6 @@ class MainActivity : AppCompatActivity() {
                     val baudRates = arrayOf("9600", "115200")
                     AlertDialog.Builder(this)
                         .setTitle("Velocidad del puerto")
-                        .setMessage("Selecciona la velocidad para continuar.")
                         .setItems(baudRates) { _, bIdx ->
                             connectToSerialPort(usbManager, selectedDriver, baudRates[bIdx].toInt())
                         }
