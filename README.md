@@ -9,12 +9,10 @@ La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Veri
 
 Tengo dos videos:
 1.- Hecho 100% con IA: https://app.heygen.com/videos/midni-qr-verifier-demostraci-n-t-cnica-a918d60318bb4a73b9ca57617e68b1eb
-2.- Hecho manualmente con OBS, se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MPG4
+2.- Hecho manualmente con OBS, se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MP4
 
 En la carpetade "documentación" existen copias de la presentación, videos y otras cosas interesantes.
 En la carpeta "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
-
-El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio: `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
 
 ---
 
@@ -32,6 +30,10 @@ Esta aplicación permite probar diferentes lectores QR, de fabricantes distintos
 Mantiene la mayor compatibilidad entre versiones de Android, desde la 7 hasta la más moderna. Los dispositivos físicos disponen de Android 7.
 
 La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el certificado de verificacion desde un almacén local, valida firma ECDSA y muestra un resumen para usuario junto con datos personales cuando la validacion es correcta.
+
+El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio: `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
+
+El proyecto implementa test unitarios, revisión de código con CodeQL y CI para compilar en  ebug usando las autmatizaciones en GitHub Actions
 
 ---
 
