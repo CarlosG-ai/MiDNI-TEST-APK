@@ -9,7 +9,9 @@ La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Veri
 
 Tengo dos videos:
 1.- Hecho 100% con IA: https://app.heygen.com/videos/midni-qr-verifier-demostraci-n-t-cnica-a918d60318bb4a73b9ca57617e68b1eb
-2.- Hecho manualmente con OBS, se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MP4
+2.- Hecho manualmente con OBS, intente subirlo a GIHUB pero pesaba mucho: 
+
+se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MP4
 
 En la carpetade "documentación" existen copias de la presentación, videos y otras cosas interesantes.
 En la carpeta "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
