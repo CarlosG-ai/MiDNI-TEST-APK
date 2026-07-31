@@ -3,17 +3,16 @@
 Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
 
 MiDNI TES APK es el nombre del proyecto
-MiDNI QR Verifier es el nombre de la aplicación publicada en UPTODOPWN: https://www.uptodown.dev/apps
+MiDNI QR Verifier es el nombre de la aplicación publicada en UPTODOPWN: https://www.uptodown.dev/apps pendiente de revisión.
 
 La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Verifier-8ckayg78j3r6zdi
 
 Tengo dos videos:
 1.- Hecho 100% con IA: https://app.heygen.com/videos/midni-qr-verifier-demostraci-n-t-cnica-a918d60318bb4a73b9ca57617e68b1eb
-2.- Hecho manualmente con OBS, intente subirlo a GIHUB pero pesaba mucho: 
+2.- Hecho manualmente con OBS, intenté subirlo a GITHUB pero pesaba mucho: 
+https://zkteco-my.sharepoint.com/:v:/g/personal/carlos_garcia_zkteco_eu/IQC2JrTrFk1vSYwekjtIvY2ZAfe3hFZY7wYxYlc5Lokg0w8?e=Eva4Fk
 
-se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MP4
-
-En la carpetade "documentación" existen copias de la presentación, videos y otras cosas interesantes.
+En la carpetade "documentación" existen copias de la presentación y otras cosas interesantes.
 En la carpeta "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
 
 ---
