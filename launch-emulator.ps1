@@ -1,10 +1,12 @@
 # Lanza el emulador y lo centra en pantalla automáticamente.
 # Por defecto TAMBIEN lanza el bridge COM -> TCP (puerto 9876).
-# Uso: .\launch-emulator.ps1 [-ComPort COM3] [-BaudRate 115200] [-NoBridge]
+# Uso: .\launch-emulator.ps1 [-ComPort COM3] [-BaudRate 115200] [-NoBridge] [-WindowPreset medium]
 param(
     [string]$ComPort  = "COM3",
     [int]   $BaudRate = 115200,
-    [switch]$NoBridge
+    [switch]$NoBridge,
+    [ValidateSet("compact", "medium", "large")]
+    [string]$WindowPreset = "medium"
 )
 
 Set-StrictMode -Version Latest
@@ -14,9 +16,103 @@ $emulator  = "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe"
 $avd       = "Medium_Phone_API_36"
 $cameraArg = "-camera-back webcam0"   # Cambia a 'virtualscene' si no tienes webcam
 
-# Tamaño deseado de la ventana del emulador (ajusta a tu gusto)
-$winW = 420
-$winH = 860
+function Resolve-AvdConfigPath {
+    param([string]$AvdName)
+
+    $avdRoot = Join-Path $env:USERPROFILE ".android\avd"
+    $iniPath = Join-Path $avdRoot "$AvdName.ini"
+    if (-not (Test-Path $iniPath)) {
+        return $null
+    }
+
+    $pathLine = Get-Content $iniPath | Where-Object { $_ -match '^path=' } | Select-Object -First 1
+    if (-not $pathLine) {
+        return $null
+    }
+
+    $avdDir = ($pathLine -replace '^path=', '').Trim()
+    $configPath = Join-Path $avdDir "config.ini"
+    if (Test-Path $configPath) {
+        return $configPath
+    }
+
+    return $null
+}
+
+function Get-AvdDisplaySpec {
+    param([string]$AvdName)
+
+    # Fallback razonable para no bloquear el lanzamiento.
+    $spec = @{
+        Width = 360
+        Height = 640
+        Density = 240
+    }
+
+    $configPath = Resolve-AvdConfigPath -AvdName $AvdName
+    if (-not $configPath) {
+        return $spec
+    }
+
+    $config = Get-Content $configPath
+    $wLine = $config | Where-Object { $_ -match '^hw\.lcd\.width\s*=' } | Select-Object -First 1
+    $hLine = $config | Where-Object { $_ -match '^hw\.lcd\.height\s*=' } | Select-Object -First 1
+    $dLine = $config | Where-Object { $_ -match '^hw\.lcd\.density\s*=' } | Select-Object -First 1
+
+    if ($wLine) {
+        $parsed = 0
+        if ([int]::TryParse(($wLine -replace '^hw\.lcd\.width\s*=\s*', '').Trim(), [ref]$parsed) -and $parsed -gt 0) {
+            $spec.Width = $parsed
+        }
+    }
+    if ($hLine) {
+        $parsed = 0
+        if ([int]::TryParse(($hLine -replace '^hw\.lcd\.height\s*=\s*', '').Trim(), [ref]$parsed) -and $parsed -gt 0) {
+            $spec.Height = $parsed
+        }
+    }
+    if ($dLine) {
+        $parsed = 0
+        if ([int]::TryParse(($dLine -replace '^hw\.lcd\.density\s*=\s*', '').Trim(), [ref]$parsed) -and $parsed -gt 0) {
+            $spec.Density = $parsed
+        }
+    }
+
+    return $spec
+}
+
+function Get-WindowSize {
+    param(
+        [hashtable]$Spec,
+        [string]$Preset,
+        [System.Drawing.Rectangle]$WorkingArea
+    )
+
+    # Factores pensados para emulador en escritorio (incluyendo decoraciones de ventana).
+    $scaleByPreset = @{
+        compact = 0.70
+        medium  = 0.82
+        large   = 0.92
+    }
+
+    $scale = $scaleByPreset[$Preset]
+    $targetH = [int]([Math]::Round($WorkingArea.Height * $scale))
+
+    # Reservar ancho según aspecto del display Android + margen por marco/controles.
+    $aspect = [double]$Spec.Width / [double]$Spec.Height
+    $targetW = [int]([Math]::Round(($targetH * $aspect) + 56))
+
+    # Limitar para no desbordar la pantalla.
+    $maxW = [Math]::Max(320, $WorkingArea.Width)
+    $maxH = [Math]::Max(480, $WorkingArea.Height)
+    $winW = [Math]::Min($targetW, $maxW)
+    $winH = [Math]::Min($targetH, $maxH)
+
+    return @{
+        Width = $winW
+        Height = $winH
+    }
+}
 
 # ── Cargar Win32 API ──────────────────────────────────────────────────────────
 Add-Type -AssemblyName System.Windows.Forms
@@ -30,10 +126,19 @@ public class Win32 {
 }
 "@
 
-# ── Calcular posición centrada ────────────────────────────────────────────────
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-$x = [int](($screen.Width  - $winW) / 2)
-$y = [int](($screen.Height - $winH) / 2)
+$displaySpec = Get-AvdDisplaySpec -AvdName $avd
+$windowSize = Get-WindowSize -Spec $displaySpec -Preset $WindowPreset -WorkingArea $screen
+$winW = [int]$windowSize.Width
+$winH = [int]$windowSize.Height
+
+$maxX = $screen.Right - $winW
+$maxY = $screen.Bottom - $winH
+$x = [int][Math]::Max($screen.Left, [Math]::Min(($screen.Left + [int](($screen.Width - $winW) / 2)), $maxX))
+$y = [int][Math]::Max($screen.Top, [Math]::Min(($screen.Top + [int](($screen.Height - $winH) / 2)), $maxY))
+
+Write-Host "Perfil AVD: $($displaySpec.Width)x$($displaySpec.Height) @ $($displaySpec.Density) dpi"
+Write-Host "Preset ventana: $WindowPreset -> ${winW}x${winH} en area util $($screen.Width)x$($screen.Height)"
 
 # ── Lanzar emulador ───────────────────────────────────────────────────────────
 Write-Host "Iniciando emulador '$avd'..."
@@ -54,13 +159,8 @@ while ($handle -eq [IntPtr]::Zero -and $waited -lt 30) {
 }
 
 if ($handle -ne [IntPtr]::Zero) {
-    # Reposicionar en bucle durante 10 s para anular la posición guardada del emulador
     Write-Host "Centrando ventana..."
-    $end = (Get-Date).AddSeconds(10)
-    while ((Get-Date) -lt $end) {
-        [Win32]::MoveWindow($handle, $x, $y, $winW, $winH, $true) | Out-Null
-        Start-Sleep -Milliseconds 400
-    }
+    [Win32]::MoveWindow($handle, $x, $y, $winW, $winH, $true) | Out-Null
     Write-Host "Ventana fija en ($x, $y) con tamaño ${winW}x${winH}"
 } else {
     Write-Host "No se pudo localizar la ventana del emulador."
