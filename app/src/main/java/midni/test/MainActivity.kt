@@ -20,6 +20,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
 import android.view.View
+import kotlin.system.exitProcess
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -50,8 +51,10 @@ class MainActivity : AppCompatActivity() {
     private var pendingSerialDriver: UsbSerialDriver? = null
     private var pendingBaudRate: Int = 9600
     private val serialTimeoutRunnable = Runnable { processSerialBuffer() }
+    private val tcpFrameTimeoutRunnable = Runnable { processTcpFrameBuffer() }
     private var tcpThread: Thread? = null
     private var tcpSocket: java.net.Socket? = null
+    private var isTcpBridgeMode = false
 
     private val usbPermissionReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -132,6 +135,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnSerial.setOnClickListener {
             startSerialSelection()
+        }
+
+        binding.btnCancelAll.setOnClickListener {
+            cancelAllAndRestartApp()
         }
     }
 
@@ -229,6 +236,22 @@ class MainActivity : AppCompatActivity() {
         updateStatus(getString(R.string.status_idle), "")
     }
 
+    private fun cancelAllAndRestartApp() {
+        resetToInitialState()
+        updateStatus(getString(R.string.status_restarting), "")
+
+        // Relanza la actividad principal con una tarea limpia para salir de estados colgados.
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: Intent(this, MainActivity::class.java)
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+        startActivity(launchIntent)
+        finishAffinity()
+
+        // Cierre defensivo del proceso para forzar reinicio completo si hay hilos residuales.
+        exitProcess(0)
+    }
+
     /**
      * Intercepta los eventos de teclado del dispositivo HID USB.
      * Los caracteres se acumulan en [hidBuffer]; al recibir Enter o tras
@@ -306,6 +329,9 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val CAMERA_PERMISSION_REQUEST = 1001
         private const val USB_PERMISSION_ACTION = "midni.test.USB_PERMISSION"
+        private const val TCP_TIMEOUT_MS = 30_000
+        private const val MIDNI_MAGIC_BYTE: Byte = 0xDC.toByte()
+        private const val MIN_TCP_FRAME_BYTES = 16
     }
 
     // â”€â”€ Puerto serie virtual USB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -318,17 +344,24 @@ class MainActivity : AppCompatActivity() {
             val dev = d.device
             "${dev.deviceName}  [VID:${"%04X".format(dev.vendorId)} PID:${"%04X".format(dev.productId)}]  (${d.ports.size} puerto/s)"
         })
-        portItems.add("[Simulacion TCP puerto 9876 â€” emulador/debug]")
+        portItems.add("Simulaci\u00F3n TCP puerto 9876")
+
+        var selectedIndex = if (drivers.isEmpty()) portItems.lastIndex else 0
         AlertDialog.Builder(this)
-            .setTitle("Seleccionar fuente de datos serie")
-            .setItems(portItems.toTypedArray()) { _, idx ->
-                if (idx == portItems.size - 1) {
+            .setTitle("Selecciona el origen de lectura")
+            .setMessage("Pulsa sobre una opci\u00F3n y despu\u00E9s en Continuar para iniciar la lectura.")
+            .setSingleChoiceItems(portItems.toTypedArray(), selectedIndex) { _, which ->
+                selectedIndex = which
+            }
+            .setPositiveButton("Continuar") { _, _ ->
+                if (selectedIndex == portItems.size - 1) {
                     startTcpBridgeMode()
                 } else {
-                    val driver = drivers[idx]
+                    val driver = drivers[selectedIndex]
                     val baudRates = arrayOf("9600", "115200")
                     AlertDialog.Builder(this)
                         .setTitle("Velocidad del puerto")
+                        .setMessage("Selecciona la velocidad para continuar.")
                         .setItems(baudRates) { _, bIdx ->
                             connectToSerialPort(usbManager, driver, baudRates[bIdx].toInt())
                         }
@@ -341,17 +374,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTcpBridgeMode(port: Int = 9876) {
+        isTcpBridgeMode = true
         serialRecvBuffer.reset()
+        serialPendingBytes = null
+        binding.cardHidPreview.visibility = View.GONE
         binding.btnSerial.setText(R.string.serial_button_listening)
         binding.btnSerial.isEnabled = false
         updateStatus("Conectando TCP\u2026",
             "Intentando localhost:$port. Aseg\u00FArese de que 'adb reverse tcp:$port tcp:$port' est\u00E1 activo y el bridge PowerShell est\u00E1 en ejecuci\u00F3n.")
         tcpThread = Thread {
             try {
-                val socket = java.net.Socket("localhost", port)
+                val socket = java.net.Socket()
+                socket.connect(java.net.InetSocketAddress("localhost", port), TCP_TIMEOUT_MS)
                 tcpSocket = socket
                 runOnUiThread {
-                    updateStatus("Esperando datos TCP\u2026", "Conectado al puerto $port. Env\u00EDe datos desde el host.")
+                    updateStatus("Esperando datos TCP\u2026", "Conectado al puerto $port. Validaci\u00F3n autom\u00E1tica activa para cada QR recibido.")
                 }
                 val inputStream = socket.getInputStream()
                 val buf = ByteArray(4096)
@@ -361,9 +398,14 @@ class MainActivity : AppCompatActivity() {
                     val data = buf.copyOf(n)
                     runOnUiThread {
                         serialRecvBuffer.write(data)
-                        serialHandler.removeCallbacks(serialTimeoutRunnable)
-                        serialHandler.postDelayed(serialTimeoutRunnable, 300)
+                        serialHandler.removeCallbacks(tcpFrameTimeoutRunnable)
+                        serialHandler.postDelayed(tcpFrameTimeoutRunnable, 300)
                     }
+                }
+            } catch (e: java.net.SocketTimeoutException) {
+                runOnUiThread {
+                    stopSerialListening()
+                    updateStatus("Timeout TCP", "No se recibieron datos en 30 segundos.")
                 }
             } catch (e: java.net.ConnectException) {
                 runOnUiThread {
@@ -385,6 +427,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connectToSerialPort(usbManager: UsbManager, driver: UsbSerialDriver, baudRate: Int) {
+        isTcpBridgeMode = false
         if (!usbManager.hasPermission(driver.device)) {
             val pi = PendingIntent.getBroadcast(
                 this, 0, Intent(USB_PERMISSION_ACTION),
@@ -448,8 +491,55 @@ class MainActivity : AppCompatActivity() {
         tcpThread = null
         try { tcpSocket?.close() } catch (_: Exception) {}
         tcpSocket = null
+        isTcpBridgeMode = false
         binding.btnSerial.setText(R.string.serial_button)
         binding.btnSerial.isEnabled = true
+    }
+
+    private fun processTcpFrameBuffer() {
+        if (!isTcpBridgeMode) return
+
+        val raw = serialRecvBuffer.toByteArray()
+        if (raw.isEmpty()) return
+
+        val magicIndex = raw.indexOfFirst { it == MIDNI_MAGIC_BYTE }
+        if (magicIndex < 0) {
+            if (raw.size > 256) {
+                serialRecvBuffer.reset()
+            }
+            updateStatus("Esperando datos TCP\u2026", "Ignorando ruido serie: no se detecta cabecera 0xDC.")
+            return
+        }
+
+        if (magicIndex > 0) {
+            val trimmed = raw.copyOfRange(magicIndex, raw.size)
+            serialRecvBuffer.reset()
+            serialRecvBuffer.write(trimmed)
+            updateStatus("Esperando datos TCP\u2026", "Ignorados $magicIndex bytes previos a la cabecera 0xDC.")
+        }
+
+        val candidate = serialRecvBuffer.toByteArray()
+        if (candidate.size < MIN_TCP_FRAME_BYTES) {
+            updateStatus("Esperando datos TCP\u2026", "Trama corta (${candidate.size} bytes). Esperando m\u00E1s datos.")
+            return
+        }
+
+        verifyTcpBytes(candidate)
+        serialRecvBuffer.reset()
+    }
+
+    private fun verifyTcpBytes(rawBytes: ByteArray) {
+        val verification = verifier.verify(rawBytes)
+        binding.tvRaw.text = verification.debugSummary
+        binding.cardHidPreview.visibility = View.GONE
+
+        if (verification.success) {
+            updateStatus("V\u00C1LIDO (TCP)", "${verification.userSummary} Esperando siguiente QR...")
+            showCredential(verification.personalData)
+        } else {
+            updateStatus("INV\u00C1LIDO (TCP)", "${verification.userSummary} Esperando siguiente QR...")
+            binding.cardCredential.visibility = View.GONE
+        }
     }
 
     private fun processSerialBuffer() {

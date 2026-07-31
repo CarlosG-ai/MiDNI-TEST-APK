@@ -1,28 +1,31 @@
-# MiDNI QR Verifier (Android 7+)
+# MiDNI QR Verifier - MiDNI TES APK
+ 
+MiDNI TES APK es el nombre del proyecto
+MiDNI QR Verifier es el nombre de la aplicación publicada en 
+Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
 
-Aplicacion Android para lectura y validacion de codigos QR de MiDNI.
+Esta es una herramienta técnica, no orientada al publico general, que busca resolver el problema al que se enfrentan los desarrolladores de productos electrónicos cuando requieren probar diferentes módulos de hardware, sobre dispositivos existentes.
 
-Esta aplicación busca resolver el problema técnico al que se enfrentan los desarrolladores de productos electrónicos, cuando requieren probar diferentes módulos de hardware.
-En este caso se requiere poder leer el contenido de un código QR desde:
+El código QR generado por la aplicación MiDNI, es muy grande y muy denso. No todos los lectores QR son capaces de leerlo con fluided para conseguir una experiencia de usuario aceptable.
+
+Esta aplicación permite probar diferentes lectores QR, de fabricantes distintos, leyendo el contenido de un código QR desde:
 - La cámara del propio dipositivo físico.
-- Una cámara conectada al puerto USB del dispositivo físico, emulando teclado HID.
-- Una cámara conectada al puerto USB del PC donde se ejecuta el emulador android. Este puerto se comparte mediante una pasarela COM-->TCP
+- Un "lector de QR" cuya salida de datos emula un teclado HID, conectado al puerto USB del dispositivo físico o al PC donde se ejeucta el emulador.
+- Un "lector de QR" cuya salida de datos es serie, conectado al puerto USB del PC donde se ejecuta el emulador android. Este puerto se comparte con el emulador mediante una pasarela COM-->TCP. (Por defecto usamos el com3 pero este valor depende del PC, hay que cambiarlo y poner el valor que asigna el PC cuando se conecta el lector)
 
-Es muy importante que funcione sobre Android 7, puede funcionar en las últimas versiones también, pero es necesario que funcione en la versión 7, porque los dipositivos físicos trabajan con esta versión de Android. Se requiere la mayor compatibilidad entre versiones de Android.
+Mantiene la mayor compatibilidad entre versiones de Android, desde la 7 hasta la más moderna. Los dispositivos físicos disponen de Android 7.
 
-El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio:
-- `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
+El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio: `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
 
 ---
 
 ## 1) Descripcion general del proyecto
 
-MiDNI QR Verifier es una app Android orientada a pruebas funcionales de lectura y verificacion de QR MiDNI en distintos escenarios:
+MiDNI TEST APK es una app Android orientada a pruebas funcionales de lectura y verificacion del QR MiDNI en distintos escenarios:
 
 - Escaneo por camara (ZXing Embedded).
 - Lectura por dispositivo HID USB (lector que emula teclado).
 - Lectura por puerto serie USB (USB Host con `usb-serial-for-android`).
-- Simulacion por TCP en emulador Android para pruebas sin hardware fisico.
 
 La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el certificado de verificacion desde un almacén local, valida firma ECDSA y muestra un resumen para usuario junto con datos personales cuando la validacion es correcta.
 
@@ -133,8 +136,7 @@ Para generar release:
 ### Scripts de soporte (emulador y simulacion)
 
 - `launch-emulator.ps1`
-   - Lanza emulador, centra ventana y opcionalmente configura `adb reverse` y
-      abre puente COM->TCP.
+   - Lanza emulador, centra ventana y configura `adb reverse` lanzando el puente COM->TCP desde una ventana separada de powershell
 - `bridge-com-tcp.ps1`
    - Abre un puerto COM en host y reenvia bytes a `localhost:9876`.
 - `test-inject-payload.ps1`
@@ -145,11 +147,11 @@ Ejemplo de flujo de simulacion en emulador:
 1. Iniciar emulador y puente:
 
 ```powershell
-.\launch-emulator.ps1 -ComPort COM8 -BaudRate 115200
+.\launch-emulator.ps1 -ComPort COM3 -BaudRate 115200
 ```
 
 2. En la app: abrir modo serie y seleccionar simulacion TCP.
-3. Inyectar payload de prueba:
+3. Mostrar QR al lector o Inyectar payload de prueba:
 
 ```powershell
 .\test-inject-payload.ps1
@@ -227,8 +229,7 @@ Ejemplo de flujo de simulacion en emulador:
 
 - Camara (QR scanner)
 - Lector HID USB
-- Lector serie USB
-- Simulacion TCP para emulador/debug
+- Lector serie USB mediante puente TCP para emulador/debug
 
 ---
 

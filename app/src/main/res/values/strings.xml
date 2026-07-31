@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MiDNI QR Verifier</string>
     <string name="scan_button">Leer QR MIDNI con la cámara</string>
-    <string name="status_idle">Esperando escaneo...</string>
+    <string name="status_idle">Seleccione el método de lectura</string>
     <string name="status_no_camera">No se ha detectado ninguna camara en el dispositivo.</string>
     <string name="hid_button">Leer QR MIDNI con emulación teclado HID</string>
     <string name="hid_button_listening">Esperando datos USB…</string>
@@ -11,4 +11,6 @@
     <string name="serial_button">Leer QR MIDNI con puerto serie virtual USB</string>
     <string name="serial_button_listening">Esperando datos serie…</string>
     <string name="serial_preview_title">Datos recibidos (Puerto Serie USB)</string>
+    <string name="cancel_all_button">Cancelar todo y reiniciar app</string>
+    <string name="status_restarting">Reiniciando app...</string>
 </resources>
