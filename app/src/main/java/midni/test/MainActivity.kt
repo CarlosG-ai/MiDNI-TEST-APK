@@ -339,31 +339,37 @@ class MainActivity : AppCompatActivity() {
     private fun startSerialSelection() {
         val usbManager = getSystemService(USB_SERVICE) as UsbManager
         val drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager)
-        val portItems = mutableListOf<String>()
-        portItems.addAll(drivers.map { d ->
-            val dev = d.device
-            "${dev.deviceName}  [VID:${"%04X".format(dev.vendorId)} PID:${"%04X".format(dev.productId)}]  (${d.ports.size} puerto/s)"
-        })
-        portItems.add("Simulaci\u00F3n TCP puerto 9876")
+        val optionLabels = mutableListOf<String>()
+        val optionDrivers = mutableListOf<UsbSerialDriver?>()
 
-        var selectedIndex = if (drivers.isEmpty()) portItems.lastIndex else 0
+        // Mostrar primero la simulacion para que siempre sea visible y facil de elegir.
+        optionLabels.add("Simulaci\u00F3n TCP puerto 9876")
+        optionDrivers.add(null)
+
+        drivers.forEach { d ->
+            val dev = d.device
+            optionLabels.add("${dev.deviceName}  [VID:${"%04X".format(dev.vendorId)} PID:${"%04X".format(dev.productId)}]  (${d.ports.size} puerto/s)")
+            optionDrivers.add(d)
+        }
+
+        var selectedIndex = 0
         AlertDialog.Builder(this)
             .setTitle("Selecciona el origen de lectura")
             .setMessage("Pulsa sobre una opci\u00F3n y despu\u00E9s en Continuar para iniciar la lectura.")
-            .setSingleChoiceItems(portItems.toTypedArray(), selectedIndex) { _, which ->
+            .setSingleChoiceItems(optionLabels.toTypedArray(), selectedIndex) { _, which ->
                 selectedIndex = which
             }
             .setPositiveButton("Continuar") { _, _ ->
-                if (selectedIndex == portItems.size - 1) {
+                val selectedDriver = optionDrivers[selectedIndex]
+                if (selectedDriver == null) {
                     startTcpBridgeMode()
                 } else {
-                    val driver = drivers[selectedIndex]
                     val baudRates = arrayOf("9600", "115200")
                     AlertDialog.Builder(this)
                         .setTitle("Velocidad del puerto")
                         .setMessage("Selecciona la velocidad para continuar.")
                         .setItems(baudRates) { _, bIdx ->
-                            connectToSerialPort(usbManager, driver, baudRates[bIdx].toInt())
+                            connectToSerialPort(usbManager, selectedDriver, baudRates[bIdx].toInt())
                         }
                         .setNegativeButton("Cancelar", null)
                         .show()

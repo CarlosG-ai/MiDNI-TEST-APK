@@ -1,7 +1,11 @@
 # MiDNI QR Verifier - MiDNI TES APK
  
 MiDNI TES APK es el nombre del proyecto
-MiDNI QR Verifier es el nombre de la aplicación publicada en 
+MiDNI QR Verifier es el nombre de la aplicación publicada en UPTODOPWN: https://www.uptodown.dev/apps
+
+La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Verifier-8ckayg78j3r6zdi
+
+
 Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
 
 Esta es una herramienta técnica, no orientada al publico general, que busca resolver el problema al que se enfrentan los desarrolladores de productos electrónicos cuando requieren probar diferentes módulos de hardware, sobre dispositivos existentes.
