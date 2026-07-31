@@ -1,25 +1,18 @@
 # MiDNI QR Verifier - MiDNI TES APK
- 
+
+Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
+
 MiDNI TES APK es el nombre del proyecto
 MiDNI QR Verifier es el nombre de la aplicación publicada en UPTODOPWN: https://www.uptodown.dev/apps
 
 La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Verifier-8ckayg78j3r6zdi
 
-En la carpeta del proyecto "Documentación" existen copias de la presentación, video y otras cosas interesantes.
-En la carpeta del proyecto "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
+Tengo dos videos:
+1.- Hecho 100% con IA: https://app.heygen.com/videos/midni-qr-verifier-demostraci-n-t-cnica-a918d60318bb4a73b9ca57617e68b1eb
+2.- Hecho manualmente con OBS, se encuentra en la carpeta del proyecto "Documentación". VIDEO_PRESENTACION.MPG4
 
-Aplicacion Android para lectura y validacion de codigos QR generados por la aplicación de la policia nacional española MiDNI.
-
-Esta es una herramienta técnica, no orientada al publico general, que busca resolver el problema al que se enfrentan los desarrolladores de productos electrónicos cuando requieren probar diferentes módulos de hardware, sobre dispositivos existentes.
-
-El código QR generado por la aplicación MiDNI, es muy grande y muy denso. No todos los lectores QR son capaces de leerlo con fluided para conseguir una experiencia de usuario aceptable.
-
-Esta aplicación permite probar diferentes lectores QR, de fabricantes distintos, leyendo el contenido de un código QR desde:
-- La cámara del propio dipositivo físico.
-- Un "lector de QR" cuya salida de datos emula un teclado HID, conectado al puerto USB del dispositivo físico o al PC donde se ejeucta el emulador.
-- Un "lector de QR" cuya salida de datos es serie, conectado al puerto USB del PC donde se ejecuta el emulador android. Este puerto se comparte con el emulador mediante una pasarela COM-->TCP. (Por defecto usamos el com3 pero este valor depende del PC, hay que cambiarlo y poner el valor que asigna el PC cuando se conecta el lector)
-
-Mantiene la mayor compatibilidad entre versiones de Android, desde la 7 hasta la más moderna. Los dispositivos físicos disponen de Android 7.
+En la carpetade "documentación" existen copias de la presentación, videos y otras cosas interesantes.
+En la carpeta "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
 
 El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio: `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
 
@@ -27,11 +20,16 @@ El proyecto implementa validacion estructural y criptografica del contenido QR, 
 
 ## 1) Descripcion general del proyecto
 
-MiDNI TEST APK es una app Android orientada a pruebas funcionales de lectura y verificacion del QR MiDNI en distintos escenarios:
+MiDNI QR Verifier es una herramienta técnica, no orientada al publico general, que busca resolver el problema al que se enfrentan los desarrolladores de productos electrónicos cuando requieren probar diferentes módulos de hardware, sobre dispositivos existentes.
 
-- Escaneo por camara (ZXing Embedded).
-- Lectura por dispositivo HID USB (lector que emula teclado).
-- Lectura por puerto serie USB (USB Host con `usb-serial-for-android`).
+El código QR generado por la aplicación MiDNI, es muy grande y muy denso. No todos los lectores QR son capaces de leerlo con fluided para conseguir una experiencia de usuario aceptable.
+
+Esta aplicación permite probar diferentes lectores QR, de fabricantes distintos, leyendo el contenido de un código QR desde:
+- La cámara del propio dipositivo físico. (ZXing Embedded).
+- Un "lector de QR" cuya salida de datos emula un teclado HID, conectado al puerto USB del dispositivo físico o al PC donde se ejeucta el emulador.
+- Un "lector de QR" cuya salida de datos es serie, conectado al puerto USB del PC donde se ejecuta el emulador android. Este puerto se comparte con el emulador mediante una pasarela COM-->TCP. (Por defecto usamos el com3 pero este valor depende del PC, hay que cambiarlo y poner el valor que asigna el PC cuando se conecta el lector)
+
+Mantiene la mayor compatibilidad entre versiones de Android, desde la 7 hasta la más moderna. Los dispositivos físicos disponen de Android 7.
 
 La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el certificado de verificacion desde un almacén local, valida firma ECDSA y muestra un resumen para usuario junto con datos personales cuando la validacion es correcta.
 
