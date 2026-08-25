@@ -9,8 +9,10 @@ La presentación está realizada con GAMMA: https://gamma.app/docs/MiDNI-QR-Veri
 
 Tengo dos videos:
 1.- Hecho 100% con IA: https://app.heygen.com/videos/midni-qr-verifier-demostraci-n-t-cnica-a918d60318bb4a73b9ca57617e68b1eb
-2.- Hecho manualmente con OBS, intenté subirlo a GITHUB pero pesaba mucho: 
+
+2.- Hecho manualmente con OBS, intenté subirlo a GITHUB pero pesaba mucho (dos enlaces por si acaso): 
 https://zkteco-my.sharepoint.com/:v:/g/personal/carlos_garcia_zkteco_eu/IQC2JrTrFk1vSYwekjtIvY2ZAfe3hFZY7wYxYlc5Lokg0w8?e=Eva4Fk
+https://workdrive.zohopublic.eu/external/5f8ce57516bb0124c47ecaec5b1315eda674b4f879edfcc2bd15c0ba89c38074
 
 En la carpetade "documentación" existen copias de la presentación y otras cosas interesantes.
 En la carpeta "midni-qr-spec\assets\images" se encuentran ejemplos de QR para poder imprimir
