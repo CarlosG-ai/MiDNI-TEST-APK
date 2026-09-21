@@ -36,7 +36,7 @@ La app parsea el payload binario del QR, extrae cabecera y TLVs, resuelve el cer
 
 El proyecto implementa validacion estructural y criptografica del contenido QR, siguiendo la especificacion incluida en el repositorio: `midni-qr-spec/MiDNI-FormatoQR_v107_sc_PN.md`
 
-El proyecto implementa test unitarios, revisión de código con CodeQL Default Setup y CI para compilar en debug usando las automatizaciones en GitHub Actions
+El proyecto implementa test unitarios, revisión de código con CodeQL y CI para compilar en debug usando las automatizaciones en GitHub Actions
 
 ---
 
@@ -255,13 +255,13 @@ Ejemplo de flujo de simulacion en emulador:
 El proyecto incluye automatizacion en GitHub Actions para integracion continua y seguridad:
 
 - CI de compilacion debug: ejecuta build y tests unitarios en cada push/pull request sobre `master`.
-- Analisis de seguridad con CodeQL Default Setup: analiza Kotlin/Java para detectar vulnerabilidades y patrones inseguros sin necesitar un workflow dedicado en el repositorio.
+- Analisis de seguridad con CodeQL: analiza Kotlin/Java para detectar vulnerabilidades y patrones inseguros mediante GitHub Code Scanning.
 
 Workflows incluidos en el repositorio:
 
 - `.github/workflows/android-debug-ci.yml`
 
-El analisis de CodeQL se ejecuta mediante GitHub Code Scanning Default Setup.
+El analisis de CodeQL se ejecuta desde GitHub Code Scanning, sin un workflow dedicado dentro del repositorio.
 
 ---
 
