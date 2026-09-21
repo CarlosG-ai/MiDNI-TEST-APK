@@ -255,12 +255,11 @@ Ejemplo de flujo de simulacion en emulador:
 El proyecto incluye automatizacion en GitHub Actions para integracion continua y seguridad:
 
 - CI de compilacion debug: ejecuta build y tests unitarios en cada push/pull request sobre `master`.
-- Analisis de seguridad con CodeQL: analiza Kotlin/Java para detectar vulnerabilidades y patrones inseguros.
+- Analisis de seguridad con CodeQL Default Setup: analiza Kotlin/Java para detectar vulnerabilidades y patrones inseguros.
 
 Workflows incluidos en el repositorio:
 
 - `.github/workflows/android-debug-ci.yml`
-- `.github/workflows/codeql.yml`
 
 ---
 
